@@ -13,6 +13,7 @@ Resources:
         Properties:
             CodeUri: builds/get_short_url.zip
             Handler: app.handler
+            Policies: AmazonDynamoDBFullAccess
             Runtime: python3.6
             Events:
                 GetShortUrl:
@@ -20,6 +21,22 @@ Resources:
                     Properties:
                         Path: /{linkId}
                         Method: get
+    UrlTable:
+        Type: AWS::DynamoDB::Table
+        Properties: 
+        AttributeDefinitions: 
+            - AttributeName: id
+              AttributeType: S
+            - AttributeName: longUrl
+              AttributeType: S
+        KeySchema: 
+            - AttributeName: id
+              KeyType: HASH
+            - AttributeName: longUrl
+              KeyType: RANGE
+        ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
 Outputs:
     GetShortUrlApi:
