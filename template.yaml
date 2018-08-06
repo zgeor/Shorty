@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Url Shortener Service
+    
+Globals:
+    Function:
+        Timeout: 3
+
+Resources:
+    GetShortUrlEndpoint:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: builds/get_short_url.zip
+            Handler: app.handler
+            Runtime: python3.6
+            Events:
+                GetShortUrl:
+                    Type: Api
+                    Properties:
+                        Path: /{linkId}
+                        Method: get
+
+Outputs:
+    GetShortUrlApi:
+      Description: "API Gateway endpoint URL for Prod stage for the function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/"
