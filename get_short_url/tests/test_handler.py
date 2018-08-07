@@ -74,10 +74,10 @@ def apigw_event():
             "gzip, deflate, sdch"
         },
         "pathParameters": {
-            "linkId": "/sample01234"
+            "linkId": "0"
         },
         "httpMethod": "GET",
-        "path": "/sample01234"
+        "path": "/0"
     }
 
 
