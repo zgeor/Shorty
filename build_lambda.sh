@@ -2,7 +2,7 @@
 
 build_path=lambda/build/
 
-rm -rf builds/
+rm -rf builds/$1.zip
 
 mkdir -p builds
 mkdir -p ${build_path}

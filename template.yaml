@@ -7,6 +7,16 @@ Globals:
     Function:
         Timeout: 3
 
+Parameters: 
+  MainTableName: 
+    Type: String
+    Default: Main
+    Description: The name of the table containing the URLS
+  CounterTableName: 
+    Type: String
+    Default: Counter
+    Description: The name of the table containing the counters
+
 Resources:
     GetShortUrlEndpoint:
         Type: AWS::Serverless::Function
@@ -21,23 +31,98 @@ Resources:
                     Properties:
                         Path: /{linkId}
                         Method: get
+            Policies:
+                Version: '2012-10-17'
+                Statement:
+                    Effect: Allow
+                    Action:
+                        - 'dynamodb:GetItem'
+                    Resource:
+                        'Fn::Join':
+                            - ''
+                            -   - 'arn:aws:dynamodb:'
+                                - Ref: 'AWS::Region'
+                                - ':'
+                                - Ref: 'AWS::AccountId'
+                                - ':table/*'
+            Environment:
+                Variables:
+                    mainTable: 
+                        Ref: 'MainTableName' 
+                    counterTable:
+                        Ref: 'CounterTableName'
+                    region: 
+                        Ref: 'AWS::Region'
+
+    CreateShortUrlEndpoint:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: builds/create_short_url.zip
+            Handler: app.handler
+            Policies: AmazonDynamoDBFullAccess
+            Runtime: python3.6
+            Events:
+                GetShortUrl:
+                    Type: Api
+                    Properties:
+                        Path: /
+                        Method: post
+            Policies:
+                Version: '2012-10-17'
+                Statement:
+                    Effect: Allow
+                    Action:
+                        - 'dynamodb:PutItem'
+                        - 'dynamodb:GetItem'
+                        - 'dynamodb:UpdateItem'
+                    Resource:
+                        'Fn::Join':
+                            - ''
+                            -   - 'arn:aws:dynamodb:'
+                                - Ref: 'AWS::Region'
+                                - ':'
+                                - Ref: 'AWS::AccountId'
+                                - ':table/*'
+            Environment:
+                Variables:
+                    mainTable: 
+                        Ref: 'MainTableName' 
+                    counterTable:
+                        Ref: 'CounterTableName' 
+                    region: 
+                        Ref: 'AWS::Region'
     UrlTable:
         Type: AWS::DynamoDB::Table
         Properties: 
-        AttributeDefinitions: 
-            - AttributeName: id
-              AttributeType: S
-            - AttributeName: longUrl
-              AttributeType: S
-        KeySchema: 
-            - AttributeName: id
-              KeyType: HASH
-            - AttributeName: longUrl
-              KeyType: RANGE
-        ProvisionedThroughput: 
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-
+            TableName: 
+                Ref: MainTableName
+            AttributeDefinitions: 
+                -
+                    AttributeName: id
+                    AttributeType: N
+            KeySchema: 
+                -
+                    AttributeName: id
+                    KeyType: HASH
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+    CounterTable:
+        Type: AWS::DynamoDB::Table
+        Properties: 
+            TableName: 
+                Ref: 'CounterTableName'
+            AttributeDefinitions: 
+                -
+                    AttributeName: counterName
+                    AttributeType: S
+            KeySchema: 
+                -
+                    AttributeName: counterName
+                    KeyType: HASH
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
 Outputs:
     GetShortUrlApi:
       Description: "API Gateway endpoint URL for Prod stage for the function"
