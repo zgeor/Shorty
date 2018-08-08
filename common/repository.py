@@ -33,7 +33,7 @@ class DynamoDbRepository:
                 AttributeDefinitions=[
                     {
                         'AttributeName': 'id',
-                        'AttributeType': 'N',
+                        'AttributeType': 'S',
                     }
                 ],
                 KeySchema=[
@@ -75,8 +75,9 @@ class DynamoDbRepository:
             Item=item,
             ReturnValues="NONE"
         )
+        
     def getItem(self, key):
         item = self.mainTable.get_item(
             Key={ 'id': key }
         )
-        return item['Item']
+        return item.get('Item', None)

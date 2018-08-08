@@ -1,4 +1,3 @@
-import pytest
 import unittest
 import sys
 sys.path.append('..') 
@@ -12,14 +11,18 @@ class TestDynamoDb(unittest.TestCase):
         self.dynamo = repository.DynamoDbRepository('main', 'counter', 'eu-west-1', 'http://localhost:8000')
 
 
-    def test_dynamoDb_getNextInt_is_int(self):
+    def test_getNextInt_is_int(self):
         assert type(int(self.dynamo.getNextInt())) is int
 
-    def test_dynamoDb_putItem(self):
+    def test_putItem(self):
         id = self.dynamo.getNextInt()
         url = 'www.google.com'
+
         self.dynamo.putItem({'id': id, 'url': url})
         item = self.dynamo.getItem(id)
-        print(item)
-        assert item['id'] == id
-        assert item['url'] == url
+        
+        assert item['id'] is id
+        assert item['url'] is url
+    
+    def test_get_non_existing_is_none(self):
+        assert self.dynamo.getItem(-1) is None
