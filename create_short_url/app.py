@@ -14,8 +14,8 @@ def handler(event, context):
     dataRepository = repository.DynamoDbRepository(
         os.environ.get('mainTable'), 
         os.environ.get('counterTable'), 
-        'eu-west-1', 
-        'https://dynamodb.eu-west-1.amazonaws.com')
+        environ.get('region'), 
+        environ.get('dynamoUrl')
     
     id = dataRepository.getNextInt()
     dataRepository.putItem({ 'id': id, 'url': request['url']})

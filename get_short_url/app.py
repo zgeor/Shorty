@@ -1,6 +1,6 @@
-import os
+from os import environ
 import logging
-from common import repository 
+import common.repository 
 logger = logging.getLogger()
 
 def handler(event, context):
@@ -10,14 +10,13 @@ def handler(event, context):
     except KeyError:
         logger.error("The request did not have a 'linkId'")
 
-    dataRepository = repository.DynamoDbRepository(
-        os.environ.get('mainTable'), 
-        os.environ.get('counterTable'), 
-        os.environ.get('region'), 
-        'https://dynamodb.'+ os.environ.get('region') +'.amazonaws.com')
+    dataRepository = common.repository.DynamoDbRepository(
+        environ.get('mainTable'), 
+        environ.get('counterTable'), 
+        environ.get('region'), 
+        environ.get('dynamoUrl'))
 
     urlItem = dataRepository.getItem(int(linkId))
-
     if(urlItem is None):
         return { "statusCode": 404 }
     else:

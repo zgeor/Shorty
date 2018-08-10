@@ -52,8 +52,10 @@ Resources:
                     counterTable:
                         Ref: 'CounterTableName'
                     region: 
-                        Ref: 'AWS::Region'
-
+                        Ref: 'AWS::Region' 
+                    dynamoUrl: 
+                        !Sub "https://dynamodb.${AWS::Region}.amazonaws.com"
+    
     CreateShortUrlEndpoint:
         Type: AWS::Serverless::Function
         Properties:
@@ -91,6 +93,8 @@ Resources:
                         Ref: 'CounterTableName' 
                     region: 
                         Ref: 'AWS::Region'
+                    dynamoUrl: 
+                        !Sub "https://dynamodb.${AWS::Region}.amazonaws.com"
     UrlTable:
         Type: AWS::DynamoDB::Table
         Properties: 

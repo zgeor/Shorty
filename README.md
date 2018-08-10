@@ -25,6 +25,8 @@ This is a POC for a url shortening service using AWS APIGW, Lambda and DynamoDB
 2. Install docker
 3. Build the lambda `./build_lambda.sh get_short_url`
 4. Run sam `sam local start-api`
+5. Run `./setup_local_dynamodb.sh`
+6. Update the Lambda Environment(WIP)
 
 You should have a new container running and listening on http://127.0.0.1:3000
 
