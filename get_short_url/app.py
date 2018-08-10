@@ -16,7 +16,7 @@ def handler(event, context):
         environ.get('region'), 
         environ.get('dynamoUrl'))
 
-    urlItem = dataRepository.getItem(int(linkId))
+    urlItem = dataRepository.getItem(converter.intFromId(linkId))
     if(urlItem is None):
         return { "statusCode": 404 }
     else:

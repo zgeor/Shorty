@@ -1,26 +1,23 @@
 import json
 
-import requests
 import logging
-import os
-from common import repository
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+from os import environ
+from common import repository, converter
 
 def handler(event, context):
-    logger.info("Requesting short url for: " + event['body'])
     request = json.loads(event['body'])
 
     dataRepository = repository.DynamoDbRepository(
-        os.environ.get('mainTable'), 
-        os.environ.get('counterTable'), 
-        environ.get('region'), 
-        environ.get('dynamoUrl')
-    
-    id = dataRepository.getNextInt()
-    dataRepository.putItem({ 'id': id, 'url': request['url']})
+        environ.get('mainTable'),
+        environ.get('counterTable'),
+        environ.get('region'),
+        environ.get('dynamoUrl'))
 
-    shortUrl = 'https://' + event['headers']['Host'] + event['requestContext']['path'] + str(id)
+    idBase=dataRepository.getNextInt()
+    id = converter.idFromInt(idBase)
+    dataRepository.putItem({'id': id, 'url': request['url']})
+
+    shortUrl='https://' + event['headers']['Host'] + event['requestContext']['path'] + id
     return {
             "statusCode": 201,
             "body": json.dumps({

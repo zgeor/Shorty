@@ -10,7 +10,8 @@ from get_short_url import app
             'get_short_url.app.environ', 
             { 'region': 'eu-west-1',
               'mainTable': 'testMain', 
-              'counterTable': 'testCounter' })
+              'counterTable': 'testCounter',
+              'dynamoUrl': 'https://dummy' })
 class GetShortUrlUnitTests(unittest.TestCase):
     valid_url = 'https://grt.local/something-long'
 
